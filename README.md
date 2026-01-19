@@ -4,6 +4,18 @@
 
 Multi-chain DEX pair scanner and early token detector using the Moralis API.
 
+![POC](https://img.shields.io/badge/readiness-poc-orange.svg)
+
+## Production Readiness
+
+**Level: POC**
+
+This system demonstrates prototyping-focused blockchain integration with:
+- **Multi-chain support** across Ethereum, BNB Chain, Polygon, Base
+- **Dynamic pair parsing** with flexible input formats
+- **Connection pooling** for reduced API latency
+- **Type-safe dataclass results** for structured output
+
 > **System Prototyping Focus**: Real-time token discovery with connection pooling and multi-chain support
 
 ## Part of RATUProject
@@ -140,12 +152,21 @@ ratu-moon-radar/
 | httpx connection pool | Reduced API latency |
 | Dataclass results | Type-safe structured data |
 
+## Notable Code
+
+This repository demonstrates prototyping-focused blockchain integration patterns. See [NOTABLE_CODE.md](NOTABLE_CODE.md) for detailed code examples highlighting:
+
+- Multi-chain configuration and support
+- Dynamic pair parsing with flexible input formats
+- Connection pooling for API optimization
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
-**Adityo Nugroho**
-- GitHub: https://github.com/adityonugrohoid
+**Adityo Nugroho**  
+- Portfolio: https://adityonugrohoid.github.io  
+- GitHub: https://github.com/adityonugrohoid  
 - LinkedIn: https://www.linkedin.com/in/adityonugrohoid/
