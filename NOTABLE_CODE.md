@@ -1,7 +1,5 @@
 # Notable Code: RATU Moon Radar
 
-**Production Readiness Level:** POC
-
 This document highlights key code sections that demonstrate the technical strengths and architectural patterns implemented in this multi-chain DEX scanner.
 
 ## Overview

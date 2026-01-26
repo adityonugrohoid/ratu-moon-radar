@@ -1,26 +1,13 @@
 # RATU Moon Radar
 
-[Python 3.10+](https://www.python.org/downloads/) | [uv](https://github.com/astral-sh/uv) | [RATUProject](https://github.com/adityonugrohoid)
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)
+![RATUProject](https://img.shields.io/badge/project-RATU-blueviolet.svg)
 
 Multi-chain DEX pair scanner and early token detector using the Moralis API.
 
-![POC](https://img.shields.io/badge/readiness-poc-orange.svg)
-
-## Production Readiness
-
-**Level: POC**
-
-This system demonstrates prototyping-focused blockchain integration with:
-- **Multi-chain support** across Ethereum, BNB Chain, Polygon, Base
-- **Dynamic pair parsing** with flexible input formats
-- **Connection pooling** for reduced API latency
-- **Type-safe dataclass results** for structured output
-
+> 🔗 **Part of the RATUProject** | Real-time Automated Trading Unified  
 > **System Prototyping Focus**: Real-time token discovery with connection pooling and multi-chain support
-
-## Part of RATUProject
-
-This repository is part of **RATUProject** (Real-time Automated Trading Unified) - an open-source portfolio demonstrating real-time, event-driven system design for financial markets and blockchain integrations.
 
 ## Features
 
