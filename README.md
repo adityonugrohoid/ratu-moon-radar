@@ -1,86 +1,107 @@
+<div align="center">
+
 # RATU Moon Radar
 
-![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
-![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)
-![RATUProject](https://img.shields.io/badge/project-RATU-blueviolet.svg)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![RATU Project](https://img.shields.io/badge/project-RATU-blueviolet.svg)](https://github.com/adityonugrohoid/ratu-template)
+[![Status](https://img.shields.io/badge/status-active-success.svg)](#)
 
-Multi-chain DEX pair scanner and early token detector using the Moralis API.
+**Multi-chain DEX pair scanner and trending-token detector via Moralis API across Ethereum, BSC, Polygon, and Base.**
 
-> 🔗 **Part of the RATUProject** | Real-time Automated Trading Unified  
-> **System Prototyping Focus**: Real-time token discovery with connection pooling and multi-chain support
+[Getting Started](#getting-started) | [Architecture](#architecture) | [Usage](#usage) | [Notable Code](#notable-code)
+
+</div>
+
+---
+
+> Part of the **RATU Project** (Real-time Automated Trading Unified) — system-prototyping focus on real-time token discovery with connection pooling and multi-chain support.
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Demo](#demo)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [How It Works](#how-it-works)
+- [Project Structure](#project-structure)
+- [Notable Code](#notable-code)
+- [Architectural Decisions](#architectural-decisions)
+- [Testing](#testing)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Author](#author)
 
 ## Features
 
-| Feature | Description |
-|---------|-------------|
-| **DEX Pair Scanner** | Discover any token pair liquidity pools across major chains |
-| **Dynamic Pair Selection** | Scan any pair via CLI: `ethusdt`, `wbtcusdc`, `bnbusdt` |
-| **Moon Token Scanner** | Detect tokens with biggest 24h price gains |
-| **Multi-Chain** | Ethereum, BNB Chain, Polygon, Base |
+- **Multi-chain DEX pair scanner** — discover liquidity pools across Ethereum, BNB Chain, Polygon, and Base in one pass
+- **Dynamic pair selection** — accepts `ethusdt`, `eth/usdt`, `ETH-USDT`, and ~13 other shortcut formats
+- **Trending-token detector** — top 24h gainers per chain via Moralis top-movers
+- **Connection pooling** — `httpx.Client` reuses TCP connections across chain queries to cut latency
+- **Rate-limit handling** — exponential backoff on HTTP 429 (`1s → 2s → 4s`)
+- **Type-safe results** — `PairResult` / `MoonToken` dataclasses for downstream consumption
 
-## System Overview
+## Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| Language | Python 3.10+ |
+| Package manager | `uv` |
+| HTTP client | `httpx` (sync, connection-pooled) |
+| Data source | Moralis Web3 API v2.2 |
+| Chains | Ethereum, BNB Chain, Polygon, Base |
+| DEXes | Uniswap V2, PancakeSwap V2, QuickSwap |
+| Config | `python-dotenv` |
+| Tests | `pytest`, `pytest-asyncio` |
+
+## Architecture
 
 ```mermaid
-flowchart TB
-    subgraph "Moon Radar CLI"
-        MAIN["main.py"]
+graph TD
+    subgraph CLI
+        MAIN["main.py<br/>entry point"]
         PARSE["parse_pair()"]
     end
-    
-    subgraph "Scanners"
-        SCANNER["scanner.py"]
-        MOON["moon_scanner.py"]
+
+    subgraph Scanners
+        SCAN["MoralisClient<br/>scanner.py"]
+        MOON["MoonScanner<br/>moon_scanner.py"]
     end
-    
-    subgraph "Config"
-        TOKENS["TOKEN_ADDRESSES"]
-        CHAINS["CHAIN_CONFIGS"]
+
+    subgraph Config
+        TOK["TOKEN_ADDRESSES<br/>per-chain map"]
+        CHAIN["CHAIN_CONFIGS<br/>4 EVM chains"]
     end
-    
-    subgraph "Moralis API"
-        PAIRS["getPairAddress"]
-        MOVERS["top-movers"]
+
+    subgraph "Moralis API v2.2"
+        PAIR_EP["/:t0/:t1/pairAddress"]
+        TOP_EP["/discovery/top-movers"]
     end
-    
+
     MAIN --> PARSE
-    PARSE --> TOKENS
-    MAIN --> SCANNER & MOON
-    SCANNER --> CHAINS
-    SCANNER --> PAIRS
-    MOON --> MOVERS
-    
-    style PARSE fill:#7ED321
-    style SCANNER fill:#4A90E2
-    style MOON fill:#4A90E2
+    PARSE --> TOK
+    MAIN --> SCAN
+    MAIN --> MOON
+    SCAN --> CHAIN
+    SCAN --> PAIR_EP
+    MOON --> TOP_EP
+
+    style MAIN fill:#0f3460,color:#fff
+    style PARSE fill:#533483,color:#fff
+    style SCAN fill:#16213e,color:#fff
+    style MOON fill:#16213e,color:#fff
+    style TOK fill:#0f3460,color:#fff
+    style CHAIN fill:#0f3460,color:#fff
+    style PAIR_EP fill:#16213e,color:#fff
+    style TOP_EP fill:#16213e,color:#fff
 ```
 
-## Usage
+## Demo
 
-```bash
-# Sync dependencies
-uv sync
-
-# Configure API key
-cp .env.example .env
-# Edit .env and add your MORALIS_API_KEY
-
-# DEX Pair Scanner (default: ETH/USDT)
-uv run moon-radar
-
-# Dynamic pair selection
-uv run moon-radar ethusdt      # ETH/USDT
-uv run moon-radar wbtcusdc     # WBTC/USDC
-uv run moon-radar bnbusdt      # BNB/USDT
-uv run moon-radar eth/usdt     # Separator also works
-
-# Moon Token Scanner (top gainers)
-uv run moon-radar moon eth
-
-# Help
-uv run moon-radar help
-```
-
-### Sample Output - DEX Pairs
+### DEX pair scan — `uv run moon-radar`
 
 ```
 MOON RADAR - Multi-Chain DEX Pair Scanner
@@ -94,7 +115,7 @@ MOON RADAR - Multi-Chain DEX Pair Scanner
   Polygon      ETH/USDT     quickswap       0x7baf833f82bb1971...
 ```
 
-### Sample Output - Moon Tokens
+### Top gainers — `uv run moon-radar moon eth`
 
 ```
 MOON RADAR - Early Token Scanner (Top Gainers)
@@ -105,7 +126,53 @@ MOON RADAR - Early Token Scanner (Top Gainers)
   2   AAVE     Aave Token           $380.50      +8.0%      $5.7B
 ```
 
-## Supported Tokens
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- `uv` — see [install instructions](https://docs.astral.sh/uv/getting-started/installation/)
+- A Moralis API key — free tier at [admin.moralis.io](https://admin.moralis.io/)
+
+### Installation
+
+```bash
+git clone https://github.com/adityonugrohoid/ratu-moon-radar.git
+cd ratu-moon-radar
+uv sync
+```
+
+### Configuration
+
+```bash
+cp .env.example .env
+# Edit .env and set MORALIS_API_KEY
+```
+
+| Variable | Required | Default | Purpose |
+|----------|----------|---------|---------|
+| `MORALIS_API_KEY` | Yes | — | Moralis Web3 API key |
+| `LOG_LEVEL` | No | `INFO` | Python logging level |
+
+## Usage
+
+```bash
+# Default pair (ETH/USDT) across all 4 chains
+uv run moon-radar
+
+# Specific pair — separator is optional and case-insensitive
+uv run moon-radar wbtcusdc
+uv run moon-radar bnb/usdt
+
+# Top 24h gainers on a chain
+uv run moon-radar moon eth
+uv run moon-radar moon bsc
+
+# Help
+uv run moon-radar help
+```
+
+### Supported tokens
 
 | Chain | Tokens |
 |-------|--------|
@@ -114,46 +181,108 @@ MOON RADAR - Early Token Scanner (Top Gainers)
 | Polygon | MATIC, WMATIC, USDT, USDC, WETH, WBTC |
 | Base | ETH, WETH, USDC, USDbC |
 
+## How It Works
+
+### 1. Pair parsing
+
+`parse_pair()` in `src/moon_radar/config.py` accepts arbitrary case + separator combinations and resolves via:
+
+1. Normalize — uppercase, strip `/`, `-`, `_`
+2. Match against ~13 known shortcuts (`ETHUSDT → (ETH, USDT)`, etc.)
+3. Right-edge token-boundary detection (`USDT`, `USDC`, `WETH`, `ETH`, `BNB`, `MATIC`, `DAI`)
+4. Last-resort midpoint split
+
+### 2. Multi-chain scan
+
+For each entry in `CHAIN_CONFIGS`, the scanner resolves both token addresses for that chain, then calls Moralis `GET /:token0/:token1/pairAddress?chain=...&exchange=...`. Chains where either token isn't mapped are skipped silently — partial results are more useful than aborting.
+
+### 3. Resilient HTTP
+
+`MoralisClient` in `src/moon_radar/scanner.py` uses `httpx.Client` for connection reuse and handles four response classes:
+
+| Status | Behavior |
+|--------|----------|
+| `200` | Return `pairAddress` |
+| `404` | Pair not found on this exchange — return `None` |
+| `429` | Exponential backoff: `1s → 2s → 4s`, up to 3 attempts |
+| Timeout | Retry up to `MAX_RETRIES` (3) with `RETRY_DELAY` between attempts |
+
+### 4. Moon scanner
+
+`MoonScanner.get_top_gainers(chain, limit=10)` calls the Moralis top-movers endpoint and returns `MoonToken` dataclasses sorted by 24h % change.
+
 ## Project Structure
 
 ```
 ratu-moon-radar/
-  src/moon_radar/
-    __init__.py
-    config.py         # Chain configs, token addresses, parse_pair()
-    scanner.py        # DEX pair scanner (MoralisClient)
-    moon_scanner.py   # Token gainer scanner (MoonScanner)
-    main.py           # Entry point with CLI
-  tests/
-    conftest.py
-    test_config.py
-    test_scanner.py
+├── src/moon_radar/
+│   ├── main.py             # CLI entry: pair-scan, moon-scan, help
+│   ├── config.py           # CHAIN_CONFIGS, TOKEN_ADDRESSES, parse_pair()
+│   ├── scanner.py          # MoralisClient + PairResult dataclass
+│   └── moon_scanner.py     # MoonScanner + MoonToken dataclass
+├── tests/
+│   ├── conftest.py
+│   ├── test_config.py      # parse_pair, address resolution
+│   ├── test_scanner.py     # client unit tests
+│   └── test_scanner_api.py # API contract tests
+├── .env.example
+├── pyproject.toml          # uv-managed, Python 3.10+
+└── NOTABLE_CODE.md
 ```
-
-## Design Decisions
-
-| Decision | Rationale |
-|----------|-----------|
-| Dynamic pair parsing | Flexible CLI with multiple input formats |
-| Token address mapping | Per-chain token lookups |
-| httpx connection pool | Reduced API latency |
-| Dataclass results | Type-safe structured data |
 
 ## Notable Code
 
-This repository demonstrates prototyping-focused blockchain integration patterns. See [NOTABLE_CODE.md](NOTABLE_CODE.md) for detailed code examples highlighting:
+> See [NOTABLE_CODE.md](NOTABLE_CODE.md) for annotated walk-throughs of the multi-chain scan loop, dynamic pair parsing, and connection-pooling setup.
 
-- Multi-chain configuration and support
-- Dynamic pair parsing with flexible input formats
-- Connection pooling for API optimization
+## Architectural Decisions
+
+### 1. `httpx.Client` over `requests`
+
+**Decision:** Use `httpx.Client` with persistent connection pooling.
+
+**Reasoning:** A single CLI run hits four chains back-to-back against the same Moralis host. `requests.Session` would also reuse connections, but `httpx` is forward-compatible with the async client we'd swap to if scan count grows.
+
+### 2. Per-chain skip on missing token
+
+**Decision:** Silently skip chains where the user-requested token symbol isn't in `TOKEN_ADDRESSES[chain]`, rather than fail the whole scan.
+
+**Reasoning:** A user querying `MATIC/USDT` shouldn't see Base flagged as an error — that chain just doesn't have MATIC. Partial results across the chains where the pair exists are more useful than aborting.
+
+### 3. Token addresses checked into source
+
+**Decision:** Hard-code per-chain token addresses in `config.py` instead of resolving on every call.
+
+**Reasoning:** Token contract addresses are immutable once deployed. An on-chain lookup per scan would add latency without buying anything. Trade-off: adding a new token is a code change, not a config change.
+
+## Testing
+
+```bash
+uv run pytest tests/ -v
+```
+
+| Module | Coverage |
+|--------|----------|
+| `test_config.py` | `parse_pair` shortcuts, separator handling, address resolution |
+| `test_scanner.py` | `MoralisClient` headers, retry logic, error mapping |
+| `test_scanner_api.py` | Live API contract checks (requires `MORALIS_API_KEY`) |
+
+## Roadmap
+
+- [x] Multi-chain DEX pair scanning
+- [x] Dynamic pair parsing
+- [x] Top-gainers (moon) scanner
+- [x] Connection pooling + retry/backoff
+- [ ] Async client for higher chain count
+- [ ] Persistent run history (SQLite)
+- [ ] Discord/Telegram alerts on new pair detection
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE).
 
 ## Author
 
-**Adityo Nugroho**  
-- Portfolio: https://adityonugrohoid.github.io  
-- GitHub: https://github.com/adityonugrohoid  
-- LinkedIn: https://www.linkedin.com/in/adityonugrohoid/
+**Adityo Nugroho** ([@adityonugrohoid](https://github.com/adityonugrohoid))
+
+- Portfolio: [adityonugrohoid.github.io](https://adityonugrohoid.github.io)
+- LinkedIn: [linkedin.com/in/adityonugrohoid](https://www.linkedin.com/in/adityonugrohoid/)
