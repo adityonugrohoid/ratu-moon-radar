@@ -3,20 +3,15 @@
 # RATU Moon Radar
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![RATU Project](https://img.shields.io/badge/project-RATU-blueviolet.svg)](https://github.com/adityonugrohoid/ratu-template)
-[![Status](https://img.shields.io/badge/status-active-success.svg)](#)
 
 **Multi-chain DEX pair scanner and trending-token detector via Moralis API across Ethereum, BSC, Polygon, and Base.**
 
-[Getting Started](#getting-started) | [Architecture](#architecture) | [Usage](#usage) | [Notable Code](#notable-code)
+[Getting Started](#getting-started) | [Usage](#usage) | [Architecture](#architecture)
 
 </div>
 
 ---
-
-> Part of the **RATU Project** (Real-time Automated Trading Unified) — system-prototyping focus on real-time token discovery with connection pooling and multi-chain support.
 
 ## Table of Contents
 
@@ -28,10 +23,9 @@
 - [Usage](#usage)
 - [How It Works](#how-it-works)
 - [Project Structure](#project-structure)
-- [Notable Code](#notable-code)
 - [Architectural Decisions](#architectural-decisions)
 - [Testing](#testing)
-- [Roadmap](#roadmap)
+- [Related Projects](#related-projects)
 - [License](#license)
 - [Author](#author)
 
@@ -226,13 +220,8 @@ ratu-moon-radar/
 │   ├── test_scanner.py     # client unit tests
 │   └── test_scanner_api.py # API contract tests
 ├── .env.example
-├── pyproject.toml          # uv-managed, Python 3.10+
-└── NOTABLE_CODE.md
+└── pyproject.toml          # uv-managed, Python 3.10+
 ```
-
-## Notable Code
-
-> See [NOTABLE_CODE.md](NOTABLE_CODE.md) for annotated walk-throughs of the multi-chain scan loop, dynamic pair parsing, and connection-pooling setup.
 
 ## Architectural Decisions
 
@@ -266,15 +255,14 @@ uv run pytest tests/ -v
 | `test_scanner.py` | `MoralisClient` headers, retry logic, error mapping |
 | `test_scanner_api.py` | Live API contract checks (requires `MORALIS_API_KEY`) |
 
-## Roadmap
+## Related Projects
 
-- [x] Multi-chain DEX pair scanning
-- [x] Dynamic pair parsing
-- [x] Top-gainers (moon) scanner
-- [x] Connection pooling + retry/backoff
-- [ ] Async client for higher chain count
-- [ ] Persistent run history (SQLite)
-- [ ] Discord/Telegram alerts on new pair detection
+| Project | Description |
+|---------|-------------|
+| [ratu-template](https://github.com/adityonugrohoid/ratu-template) | Unified README template and house standards for the RATU ecosystem |
+| [ratu-fix-bot](https://github.com/adityonugrohoid/ratu-fix-bot) | Multi-chain fix protocol trader with live execution and order management |
+| [ratu-onchain-monitor](https://github.com/adityonugrohoid/ratu-onchain-monitor) | Real-time blockchain state tracker for transaction monitoring |
+| [ratu-rest-api](https://github.com/adityonugrohoid/ratu-rest-api) | Unified REST API for multi-chain dApps and trading systems |
 
 ## License
 
