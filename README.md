@@ -3,10 +3,10 @@
 # RATU Moon Radar
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://docs.astral.sh/uv/)
+[![uv](https://img.shields.io/badge/uv-package%20manager-blueviolet)](https://github.com/astral-sh/uv)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Multi-chain DEX pair scanner and trending-token detector via Moralis API across Ethereum, BSC, Polygon, and Base.**
+**Multi-chain DEX pair scanner and trending-token detector via Moralis API across Ethereum, BSC, Polygon, and Base**
 
 [Getting Started](#getting-started) | [Usage](#usage) | [Architecture](#architecture)
 
@@ -255,6 +255,15 @@ uv run pytest tests/ -v
 | `test_config.py` | `parse_pair` shortcuts, separator handling, address resolution |
 | `test_scanner.py` | `MoralisClient` headers, retry logic, error mapping |
 | `test_scanner_api.py` | Live API contract checks (requires `MORALIS_API_KEY`) |
+
+## Related Projects
+
+| Project | Description |
+|---------|-------------|
+| [ratu-template](https://github.com/adityonugrohoid/ratu-template) | Opinionated Python scaffold for real-time, event-driven trading and monitoring systems |
+| [ratu-onchain-monitor](https://github.com/adityonugrohoid/ratu-onchain-monitor) | On-chain token holder analytics and whale tracker via Ankr API |
+| [ratu-rest-api](https://github.com/adityonugrohoid/ratu-rest-api) | Binance market snapshot client for price, depth, trades, and multi-timeframe klines |
+| [ratu-fix-bot](https://github.com/adityonugrohoid/ratu-fix-bot) | Low-latency Binance FIX 4.4 bot with ED25519 auth and a spread market-making loop |
 
 ## License
 
